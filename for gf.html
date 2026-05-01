@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{font-family:'Jost',sans-serif;background:#fdf0f5;color:#4a1228;}
+
+:root{
+  --pink:#e8639a;
+  --pink-deep:#c0446e;
+  --pink-light:#f9c0d8;
+  --pink-glow:rgba(232,99,154,0.3);
+  --cream:#fff8fb;
+  --blush:#fde8f0;
+  --mauve:#c2768e;
+  --text-dark:#4a1228;
+  --text-muted:#b57a90;
+  --border:rgba(232,99,154,0.28);
+  --card-bg:rgba(255,245,250,0.9);
+  --section-bg:#fef2f7;
+  --section-bg2:#fdeef5;
+  /* garden natural greens */
+  --stem-green:#5a8a3c;
+  --leaf-green:#6faa48;
+  --leaf-mid:#8dcc60;
+}
+
+/* ════════════════════════
+   LOGIN
+════════════════════════ */
+#page-login{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;transition:opacity 0.9s ease;
+}
+#page-login.hide{opacity:0;pointer-events:none;}
+
+#slideshow{position:absolute;inset:0;z-index:0;}
+.slide{position:absolute;inset:0;opacity:0;transition:opacity 2.8s ease-in-out;}
+.slide.active{opacity:1;}
+.slide:nth-child(1){background:radial-gradient(ellipse at 30% 60%,rgba(255,180,215,0.65) 0%,transparent 55%),radial-gradient(ellipse at 75% 25%,rgba(240,190,230,0.45) 0%,transparent 50%),#fce8f2;}
+.slide:nth-child(2){background:radial-gradient(ellipse at 70% 55%,rgba(250,190,220,0.6) 0%,transparent 55%),radial-gradient(ellipse at 20% 30%,rgba(230,180,240,0.4) 0%,transparent 48%),#fbe4f0;}
+.slide:nth-child(3){background:radial-gradient(ellipse at 50% 40%,rgba(245,185,220,0.55) 0%,transparent 55%),radial-gradient(ellipse at 10% 70%,rgba(255,200,230,0.4) 0%,transparent 45%),#fde9f3;}
+.slide:nth-child(4){background:radial-gradient(ellipse at 35% 20%,rgba(240,185,235,0.5) 0%,transparent 55%),radial-gradient(ellipse at 65% 75%,rgba(255,195,225,0.45) 0%,transparent 50%),#fce7f1;}
+.slide::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 80%,rgba(232,99,154,0.07) 0%,transparent 35%),radial-gradient(circle at 80% 15%,rgba(200,140,200,0.05) 0%,transparent 30%);animation:bokeh 12s ease-in-out infinite alternate;}
+@keyframes bokeh{from{transform:scale(1) translate(0,0);}to{transform:scale(1.06) translate(10px,-14px);}}
+
+#petals{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;}
+.petal{position:absolute;border-radius:50% 0 50% 0;animation:petalDrift var(--pd) ease-in-out infinite var(--pdl);}
+@keyframes petalDrift{0%{transform:translateY(0) rotate(0deg);opacity:0.18;}50%{opacity:0.32;}100%{transform:translateY(-28px) rotate(18deg);opacity:0.08;}}
+
+.login-wrap{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:20px;padding:20px;animation:fadeUp 1.3s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+.login-title{text-align:center;}
+.lily-float{font-size:30px;display:block;margin-bottom:8px;animation:lf 3.5s ease-in-out infinite;}
+@keyframes lf{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-8px) rotate(4deg);}}
+.login-title h1{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,6vw,40px);font-weight:300;letter-spacing:4px;color:var(--text-dark);text-shadow:0 0 28px rgba(232,99,154,0.25),0 2px 8px rgba(180,80,110,0.08);}
+.login-title p{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text-muted);margin-top:5px;}
+.login-card{background:var(--card-bg);backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:22px;padding:34px 28px 28px;width:100%;max-width:400px;box-shadow:0 8px 50px rgba(200,80,120,0.1),0 2px 20px rgba(180,60,100,0.06),inset 0 1px 0 rgba(255,255,255,0.85);}
+.input-group{margin-bottom:13px;}
+.input-group label{display:block;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mauve);margin-bottom:6px;}
+.input-group input{width:100%;background:rgba(255,255,255,0.75);border:1.5px solid rgba(232,99,154,0.2);border-radius:12px;padding:14px 17px;font-size:14px;color:var(--text-dark);font-family:'Jost',sans-serif;letter-spacing:.5px;outline:none;transition:border-color .25s,box-shadow .25s,background .25s;}
+.input-group input::placeholder{color:rgba(180,120,150,0.5);}
+.input-group input:focus{border-color:var(--pink);background:rgba(255,255,255,0.98);box-shadow:0 0 0 3px rgba(232,99,154,0.1);}
+.error-msg{color:#d0425a;font-size:12px;text-align:center;margin:-3px 0 11px;display:none;animation:shake .4s ease;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}75%{transform:translateX(8px);}}
+.error-msg.show{display:block;}
+.btn-login{width:100%;padding:15px;background:linear-gradient(135deg,#f4a0c8 0%,#e8639a 40%,#c0446e 100%);color:#fff;font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;border:none;border-radius:12px;cursor:pointer;font-family:'Jost',sans-serif;box-shadow:0 4px 22px rgba(232,99,154,0.42),inset 0 1px 0 rgba(255,255,255,0.22);position:relative;overflow:hidden;transition:transform .15s,box-shadow .2s,filter .2s;}
+.btn-login::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.16) 0%,transparent 55%);border-radius:inherit;}
+.btn-login:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(232,99,154,0.58);filter:brightness(1.05);}
+.btn-login:active{transform:translateY(0);}
+.card-footer{margin-top:18px;text-align:center;font-size:11.5px;color:var(--text-muted);letter-spacing:.4px;line-height:1.8;}
+.card-footer .accent{color:var(--pink);}
+
+/* ════════════════════════
+   GARDEN PAGE — scroll container
+════════════════════════ */
+#page-garden{
+  position:fixed;inset:0;z-index:100;
+  display:none;overflow-y:scroll;
+  background:var(--section-bg);
+}
+#page-garden.active{display:block;}
+
+/* sticky hero */
+#garden-hero{
+  position:sticky;top:0;width:100%;height:100vh;
+  overflow:hidden;z-index:1;
+  background:linear-gradient(to bottom,#e8f5e2 0%,#f0fae8 40%,#f5fdf0 100%);
+}
+#lily-canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* white fog that rises over the garden as user scrolls */
+#hero-fade{
+  position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(to top,rgba(254,242,247,1) 0%,rgba(254,242,247,0.85) 30%,rgba(254,242,247,0) 100%);
+  opacity:0;
+}
+.scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);text-align:center;z-index:10;opacity:0;transition:opacity 1.2s ease;pointer-events:none;}
+.scroll-hint.show{opacity:1;}
+.scroll-hint span{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#7a9a60;margin-bottom:8px;}
+.scroll-chevron{width:20px;height:20px;margin:0 auto;border-right:1.5px solid var(--stem-green);border-bottom:1.5px solid var(--stem-green);transform:rotate(45deg);animation:chevBob 1.6s ease-in-out infinite;}
+@keyframes chevBob{0%,100%{transform:rotate(45deg) translateY(0);}50%{transform:rotate(45deg) translateY(5px);}}
+
+/* spacer — gives scroll room over sticky hero */
+#hero-spacer{position:relative;z-index:2;height:120vh;pointer-events:none;}
+
+/* ── Video section ── */
+#video-section{
+  position:relative;z-index:2;
+  min-height:100vh;
+  background:linear-gradient(to bottom,var(--section-bg) 0%,var(--section-bg2) 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:70px 24px;gap:28px;
+}
+.section-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-muted);text-align:center;}
+.video-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,44px);font-weight:300;letter-spacing:4px;color:var(--text-dark);text-align:center;text-shadow:0 2px 16px rgba(232,99,154,0.15);}
+.video-frame{
+  width:100%;max-width:700px;
+  aspect-ratio:16/9;
+  background:linear-gradient(135deg,#fde8f0 0%,#f9d0e4 40%,#fce0ee 100%);
+  border:2px solid rgba(232,99,154,0.2);
+  border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  box-shadow:0 8px 50px rgba(200,80,120,0.1),0 2px 20px rgba(180,60,100,0.06);
+  position:relative;overflow:hidden;
+}
+.video-frame::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 40%,rgba(255,210,230,0.5) 0%,transparent 65%);
+}
+.video-placeholder-icon{font-size:56px;position:relative;z-index:1;animation:lf 4s ease-in-out infinite;}
+.video-placeholder-text{position:relative;z-index:1;text-align:center;}
+.video-placeholder-text p{font-size:13px;letter-spacing:2px;color:var(--mauve);margin-bottom:6px;}
+.video-placeholder-text small{font-size:10px;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;}
+/* Replace placeholder with actual video tag — just add src */
+.video-frame video{width:100%;height:100%;object-fit:cover;border-radius:16px;display:none;}
+
+/* ── Calendar section ── */
+#calendar-section{
+  position:relative;z-index:2;
+  min-height:100vh;
+  background:var(--section-bg2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:70px 24px;overflow:hidden;
+}
+#calendar-section::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 20%,rgba(255,180,215,0.3) 0%,transparent 55%),radial-gradient(ellipse at 20% 80%,rgba(230,180,235,0.18) 0%,transparent 50%);
+  pointer-events:none;
+}
+.cal-label{position:relative;z-index:1;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--text-muted);margin-bottom:44px;text-align:center;opacity:0;transition:opacity 1s ease;}
+.cal-label.show{opacity:1;}
+
+.flip-row{position:relative;z-index:1;display:flex;gap:16px;align-items:flex-start;justify-content:center;flex-wrap:wrap;opacity:0;transition:opacity 1s ease .2s;}
+.flip-row.show{opacity:1;}
+.flip-unit{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.flip-unit-lbl{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);}
+
+/* ALL cards same size */
+.flip-card{width:110px;height:130px;position:relative;perspective:700px;flex-shrink:0;}
+@media(max-width:480px){.flip-card{width:80px;height:96px;}}
+.flip-face{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#ffffff 0%,#fdf2f6 50%,#fae8f0 100%);
+  border:1px solid rgba(232,99,154,0.22);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  box-shadow:0 4px 24px rgba(200,80,120,0.1),0 1px 4px rgba(180,60,100,0.06),inset 0 1px 0 rgba(255,255,255,0.9);
+}
+.flip-face::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(232,99,154,0.18);}
+.flip-face span{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,7vw,52px);font-weight:400;color:var(--text-dark);user-select:none;line-height:1;position:relative;z-index:1;}
+.flip-card.month .flip-face span{font-size:clamp(18px,3.5vw,26px);letter-spacing:2px;}
+
+.flip-card.flipping{animation:flip .1s ease-in-out;}
+@keyframes flip{0%{transform:rotateX(0);}50%{transform:rotateX(-88deg);}100%{transform:rotateX(0);}}
+
+/* Final date */
+.final-date{position:relative;z-index:1;margin-top:48px;text-align:center;opacity:0;transform:translateY(16px);transition:opacity 1.4s ease,transform 1.4s ease;}
+.final-date.show{opacity:1;transform:translateY(0);}
+.final-date h2{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,5vw,42px);font-weight:300;letter-spacing:6px;background:linear-gradient(90deg,#c0446e,#e8639a,#c07ab0,#e8639a,#c0446e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:300%;animation:shimmer 4s linear infinite;margin-bottom:8px;}
+@keyframes shimmer{0%{background-position:0%;}100%{background-position:300%;}}
+.final-date p{font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--mauve);}
+
+/* Drop-down message */
+.drop-message{
+  position:relative;z-index:1;
+  margin-top:36px;text-align:center;
+  overflow:hidden;max-height:0;
+  transition:max-height 1.4s cubic-bezier(0.22,1,0.36,1), opacity 1.2s ease;
+  opacity:0;
+}
+.drop-message.show{max-height:140px;opacity:1;}
+.drop-message h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(20px,4vw,32px);font-weight:300;
+  font-style:italic;letter-spacing:3px;
+  color:var(--pink-deep);
+  text-shadow:0 2px 16px rgba(232,99,154,0.2);
+  margin-bottom:6px;
+}
+.drop-message p{font-size:11px;letter-spacing:3px;color:var(--text-muted);}
+
+/* Next button */
+.btn-next-wrap{position:relative;z-index:1;margin-top:44px;opacity:0;transform:translateY(18px);transition:opacity 1.2s ease .5s,transform 1.2s ease .5s;}
+.btn-next-wrap.show{opacity:1;transform:translateY(0);}
+.btn-next{padding:16px 52px;background:transparent;border:1.5px solid var(--pink);border-radius:50px;color:var(--pink);font-size:12px;letter-spacing:4px;text-transform:uppercase;font-family:'Jost',sans-serif;cursor:pointer;position:relative;overflow:hidden;transition:color .3s,box-shadow .3s;box-shadow:0 0 16px rgba(232,99,154,0.14);}
+.btn-next::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--pink-deep),var(--pink));transform:scaleX(0);transform-origin:left;transition:transform .35s ease;border-radius:inherit;}
+.btn-next:hover{color:#fff;box-shadow:0 0 28px rgba(232,99,154,0.42);}
+.btn-next:hover::before{transform:scaleX(1);}
+.btn-next span{position:relative;z-index:1;}
+</style>
+</head>
+<body>
+
+<!-- ════ LOGIN ════ -->
+<div id="page-login">
+  <div id="slideshow">
+    <div class="slide active"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+  </div>
+  <div id="petals"></div>
+  <div class="login-wrap">
+    <div class="login-title">
+      <span class="lily-float">🌸</span>
+      <h1>Something for you</h1>
+      <p>enter your details to open your gift</p>
+    </div>
+    <div class="login-card">
+      <div class="input-group">
+        <label>Your Name</label>
+        <input type="text" id="username" placeholder="Full name" autocomplete="username">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="error-msg" id="error-msg">Hmm, that doesn't seem right. Try again ♡</div>
+      <button class="btn-login" onclick="handleLogin()">Open My Gift</button>
+      <div class="card-footer">A little surprise is waiting for you<br><span class="accent">made with love, just for you ♡</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ GARDEN PAGE ════ -->
+<div id="page-garden">
+
+  <!-- Sticky lily garden hero -->
+  <div id="garden-hero">
+    <canvas id="lily-canvas"></canvas>
+    <div id="hero-fade"></div>
+    <div class="scroll-hint" id="scroll-hint">
+      <span>scroll down</span>
+      <div class="scroll-chevron"></div>
+    </div>
+  </div>
+
+  <!-- Spacer: gives scroll distance so hero fades -->
+  <div id="hero-spacer"></div>
+
+  <!-- Video section -->
+  <div id="video-section">
+    <p class="section-eyebrow">a moment in time ♡</p>
+    <h2 class="video-title">Our Story So Far</h2>
+    <!--
+      TO ADD YOUR VIDEO:
+      1. Place your video file (e.g. ourvideo.mp4) in the same folder as this HTML file
+      2. Replace the placeholder below with:
+         <video src="ourvideo.mp4" controls autoplay muted loop style="width:100%;max-width:700px;border-radius:18px;box-shadow:0 8px 50px rgba(200,80,120,0.1);"></video>
+    -->
+    <div class="video-frame">
+      <div class="video-placeholder-icon">🎬</div>
+      <div class="video-placeholder-text">
+        <p>Your video goes here ♡</p>
+        <small>Replace this placeholder with your video file</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flip calendar -->
+  <div id="calendar-section">
+    <p class="cal-label" id="cal-label">Counting every day with you…</p>
+    <div class="flip-row" id="flip-row">
+      <div class="flip-unit">
+        <div class="flip-unit-lbl">Month</div>
+        <div class="flip-card month" id="fc-month"><div class="flip-face"><span id="fv-month">Apr</span></div></div>
+      </div>
+      <div class="flip-unit">
+        <div class="flip-unit-lbl">Day</div>
+        <div class="flip-card" id="fc-day"><div class="flip-face"><span id="fv-day">02</span></div></div>
+      </div>
+      <div class="flip-unit">
+        <div class="flip-unit-lbl">Year</div>
+        <div class="flip-card" id="fc-year"><div class="flip-face"><span id="fv-year">2026</span></div></div>
+      </div>
+    </div>
+
+    <div class="final-date" id="final-date">
+      <h2>May 02, 2026</h2>
+      <p>our first monthsary ♡</p>
+    </div>
+
+    <div class="drop-message" id="drop-message">
+      <h3>"1 month down, a lifetime to go."</h3>
+      <p>and I'd choose you every single time ♡</p>
+    </div>
+
+    <div class="btn-next-wrap" id="btn-next-wrap">
+      <button class="btn-next" onclick="goToNextPage()"><span>Continue to your surprise →</span></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── PETALS ── */
+(function(){
+  const c=document.getElementById('petals');
+  for(let i=0;i<22;i++){
+    const p=document.createElement('div');p.className='petal';
+    const sz=6+Math.random()*14;
+    p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--pd:${(4+Math.random()*6).toFixed(1)}s;--pdl:-${(Math.random()*6).toFixed(1)}s;transform:rotate(${Math.random()*360}deg);background:rgba(232,99,154,${(0.08+Math.random()*0.13).toFixed(2)});`;
+    c.appendChild(p);
+  }
+})();
+
+/* ── SLIDESHOW ── */
+(function(){
+  const s=document.querySelectorAll('.slide');let c=0;
+  setInterval(()=>{s[c].classList.remove('active');c=(c+1)%s.length;s[c].classList.add('active');},4800);
+})();
+
+/* ── LOGIN ── */
+function handleLogin(){
+  const u=document.getElementById('username').value.trim();
+  const p=document.getElementById('password').value.trim();
+  const e=document.getElementById('error-msg');
+  if(u.toLowerCase()==='yollylen abasola'&&p==='04022026'){
+    e.classList.remove('show');
+    const lp=document.getElementById('page-login');
+    lp.classList.add('hide');
+    setTimeout(()=>{
+      lp.style.display='none';
+      const gp=document.getElementById('page-garden');
+      gp.classList.add('active');
+      initGarden();
+    },950);
+  } else {
+    e.classList.remove('show');
+    void e.offsetWidth;
+    e.classList.add('show');
+  }
+}
+document.addEventListener('keydown',ev=>{if(ev.key==='Enter')handleLogin();});
+
+/* ════════════════════════════════════
+   GARDEN INIT
+════════════════════════════════════ */
+let calStarted=false;
+
+function initGarden(){
+  const canvas=document.getElementById('lily-canvas');
+  const ctx=canvas.getContext('2d');
+
+  function resize(){
+    canvas.width=canvas.offsetWidth;
+    canvas.height=canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  setTimeout(()=>document.getElementById('scroll-hint').classList.add('show'),2800);
+
+  /* hex #rrggbb → rgba(r,g,b,a) — avoids string concat color bugs */
+  function hexA(hex,a){
+    const r=parseInt(hex.slice(1,3),16);
+    const g=parseInt(hex.slice(3,5),16);
+    const b=parseInt(hex.slice(5,7),16);
+    return `rgba(${r},${g},${b},${a})`;
+  }
+
+  /* ── NATURAL garden colour sets ── */
+  /* Lily flower colours: whites, pinks, peaches, cream, soft orange */
+  const flowerPalettes=[
+    ['#ffffff','#fce8f0','#f9a8d4','#fbcfe8','#fde8f0'], // white-pink
+    ['#ffd6ec','#fca5c5','#f472b6','#fce7f3','#fda4af'], // pink family
+    ['#fff0d6','#fcd9a0','#f9b660','#fde8b0','#fef3d8'], // peach/orange
+    ['#fef9e7','#fde8b0','#f9c46a','#fff3cd','#fde68a'], // cream/yellow
+    ['#ffe4e1','#ffb3b3','#ff8fa3','#fecdd3','#fda4af'], // coral-pink
+    ['#f8f8ff','#ede9fe','#c4b5fd','#e9d5ff','#f3e8ff'], // lavender-white
+  ];
+  /* Leaf/stem colours: realistic greens */
+  const leafCols=['#4a7c35','#5a8a3c','#6faa48','#3d6b2a','#527a38','#7ab84f'];
+
+  function rFlPal(){return flowerPalettes[Math.floor(Math.random()*flowerPalettes.length)];}
+  function rLeafCol(){return leafCols[Math.floor(Math.random()*leafCols.length)];}
+
+  /* ── Draw one petal ── */
+  function drawPetal(cx,cy,angle,len,fat,col,alpha){
+    ctx.save();
+    ctx.translate(cx,cy);ctx.rotate(angle);
+    ctx.globalAlpha=Math.max(0,alpha);
+    const w=len*fat;
+    ctx.shadowColor=col;ctx.shadowBlur=6;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo( w,-len*0.22, w*0.7,-len*0.72, 0,-len);
+    ctx.bezierCurveTo(-w*0.7,-len*0.72,-w,-len*0.22, 0,0);
+    ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,0,-len);
+    g.addColorStop(0,  hexA(col,0.2));
+    g.addColorStop(0.3,hexA(col,0.7));
+    g.addColorStop(0.75,hexA(col,0.92));
+    g.addColorStop(1,  hexA(col,0.6));
+    ctx.fillStyle=g;ctx.fill();
+    ctx.strokeStyle=hexA(col,0.45);ctx.lineWidth=0.8;ctx.stroke();
+    // mid vein
+    ctx.beginPath();ctx.moveTo(0,-len*0.05);ctx.quadraticCurveTo(0,-len*0.5,0,-len*0.9);
+    ctx.strokeStyle=hexA('#ffffff',0.45);ctx.lineWidth=0.7;ctx.shadowBlur=2;ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ── Draw a realistic green leaf ── */
+  function drawLeaf(cx,cy,angle,len,col,alpha){
+    ctx.save();
+    ctx.translate(cx,cy);ctx.rotate(angle);
+    ctx.globalAlpha=Math.max(0,alpha*0.88);
+    const w=len*0.3;
+    ctx.shadowColor=col;ctx.shadowBlur=5;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo( w,-len*0.38, w*0.8,-len*0.72, 0,-len);
+    ctx.bezierCurveTo(-w*0.8,-len*0.72,-w,-len*0.38, 0,0);
+    ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,0,-len);
+    g.addColorStop(0,  hexA(col,0.55));
+    g.addColorStop(0.45,hexA(col,0.9));
+    g.addColorStop(1,  hexA(col,0.65));
+    ctx.fillStyle=g;ctx.fill();
+    ctx.strokeStyle=hexA(col,0.4);ctx.lineWidth=0.7;ctx.stroke();
+    // leaf vein
+    ctx.beginPath();ctx.moveTo(0,-len*0.05);ctx.quadraticCurveTo(0,-len*0.5,0,-len*0.88);
+    ctx.strokeStyle=hexA('#ffffff',0.3);ctx.lineWidth=0.6;ctx.shadowBlur=0;ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ── Full lily bloom ── */
+  function lilyBloom(cx,cy,size,pal,alpha,rot){
+    if(size<2)return;
+    const n=6;
+    // outer petals
+    for(let i=0;i<n;i++){
+      const a=(i/n)*Math.PI*2+rot;
+      drawPetal(cx,cy,a,size,0.28,pal[i%pal.length],alpha);
+    }
+    // inner shorter petals
+    for(let i=0;i<n;i++){
+      const a=((i+0.5)/n)*Math.PI*2+rot;
+      drawPetal(cx,cy,a,size*0.58,0.22,pal[(i+1)%pal.length],alpha*0.75);
+    }
+    // stamen — warm yellow center
+    ctx.save();
+    ctx.globalAlpha=Math.max(0,alpha);
+    const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,size*0.22);
+    cg.addColorStop(0,  hexA('#fff8e0',1));
+    cg.addColorStop(0.4,hexA('#f9d160',0.85));
+    cg.addColorStop(0.8,hexA('#f4a800',0.4));
+    cg.addColorStop(1,  hexA('#f4a800',0));
+    ctx.shadowColor=hexA('#fde047',1);ctx.shadowBlur=10;ctx.fillStyle=cg;
+    ctx.beginPath();ctx.arc(cx,cy,size*0.22,0,Math.PI*2);ctx.fill();
+    // stamens
+    for(let i=0;i<6;i++){
+      const a=(i/6)*Math.PI*2+rot+0.3;
+      const r=size*0.3;
+      const sx=cx+Math.cos(a)*r, sy=cy+Math.sin(a)*r;
+      ctx.shadowColor=hexA('#fde047',0.8);ctx.shadowBlur=4;
+      ctx.fillStyle=hexA('#fde047',0.9);
+      ctx.beginPath();ctx.arc(sx,sy,1.8,0,Math.PI*2);ctx.fill();
+      // stamen line
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(sx,sy);
+      ctx.strokeStyle=hexA('#c8a000',0.35);ctx.lineWidth=0.8;ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ── Draw stem ── */
+  function drawStem(x,by,h,col,alpha){
+    ctx.save();ctx.globalAlpha=Math.max(0,alpha);
+    ctx.strokeStyle=col;ctx.lineWidth=2.8;ctx.lineCap='round';
+    ctx.shadowColor=col;ctx.shadowBlur=4;
+    ctx.beginPath();ctx.moveTo(x,by);
+    ctx.bezierCurveTo(x,by-h*0.38,x+(Math.random()>0.5?8:-8),by-h*0.72,x,by-h);
+    ctx.stroke();ctx.restore();
+  }
+
+  /* ═══════════════════════════════════════════
+     ONE-TIME spawn: all lilies grown ONCE, stay forever
+  ═══════════════════════════════════════════ */
+  const PLANT_COUNT=28; // fixed number of lilies — no respawn
+  const plants=[];
+
+  class LilyPlant{
+    constructor(index){
+      const W=canvas.width,H=canvas.height;
+      // distribute evenly across width
+      this.x=W*(0.03+(index/(PLANT_COUNT-1))*0.94)+( Math.random()*30-15);
+      this.x=Math.max(30,Math.min(W-30,this.x));
+      this.baseY=H;
+      this.targetH=H*(0.42+Math.random()*0.5);
+      this.currentH=0;
+      this.riseSpeed=1.6+Math.random()*2.2;
+      this.flowerPal=rFlPal();
+      this.stemCol=rLeafCol();
+      this.leafCol=rLeafCol();
+      this.bloomSize=36+Math.random()*40;
+      this.rot=Math.random()*Math.PI*2;
+      this.rotSpd=(Math.random()-0.5)*0.003;
+      this.alpha=0;
+      // stagger start so they don't all pop at once
+      this.delay=Math.floor(index*8+Math.random()*30);
+      this.delayCounter=0;
+      this.grown=false;
+      // baked stem curve offset
+      this.curveX=(Math.random()>0.5?1:-1)*(4+Math.random()*8);
+      // 2–3 leaves
+      const nLeaves=2+Math.floor(Math.random()*2);
+      this.leaves=Array.from({length:nLeaves},(_,i)=>({
+        t:0.3+Math.random()*0.38,
+        angle:(i%2===0?1:-1)*(0.48+Math.random()*0.42),
+        len:22+Math.random()*34,
+      }));
+    }
+    update(){
+      if(this.grown)return; // fully grown — no more updates needed
+      if(this.delayCounter<this.delay){this.delayCounter++;return;}
+      if(this.currentH<this.targetH){
+        this.currentH=Math.min(this.targetH,this.currentH+this.riseSpeed);
+        this.alpha=Math.min(1,this.currentH/(this.targetH*0.3));
+      } else {
+        this.grown=true; // mark grown — update() will now skip
+      }
+      this.rot+=this.rotSpd;
+    }
+    draw(globalAlpha){
+      if(this.delayCounter<this.delay)return;
+      const bx=this.x,by=this.baseY;
+      const a=this.alpha*globalAlpha;
+      if(a<=0)return;
+      // stem
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,a);
+      ctx.strokeStyle=hexA(this.stemCol,0.85);ctx.lineWidth=2.8;ctx.lineCap='round';
+      ctx.shadowColor=this.stemCol;ctx.shadowBlur=3;
+      ctx.beginPath();ctx.moveTo(bx,by);
+      ctx.bezierCurveTo(bx,by-this.currentH*0.38,bx+this.curveX,by-this.currentH*0.72,bx,by-this.currentH);
+      ctx.stroke();ctx.restore();
+      // leaves
+      this.leaves.forEach(lf=>{
+        const prog=this.currentH/this.targetH;
+        if(prog<lf.t)return;
+        const la=Math.min(1,(prog-lf.t)/0.16);
+        const midX=bx+this.curveX*(lf.t);
+        const ly=by-this.currentH*lf.t;
+        drawLeaf(midX,ly,lf.angle,lf.len*la,this.leafCol,la*a);
+      });
+      // bloom
+      const bprog=Math.min(1,this.currentH/(this.targetH*0.62));
+      lilyBloom(bx,by-this.currentH,this.bloomSize*bprog,this.flowerPal,bprog*a,this.rot);
+    }
+  }
+
+  // Create all plants once
+  for(let i=0;i<PLANT_COUNT;i++) plants.push(new LilyPlant(i));
+
+  // Track how much the garden has faded (for global alpha)
+  let gardenGlobalAlpha=1;
+
+  /* ── Render loop ── */
+  // Once all plants are grown, we only need to redraw when gardenGlobalAlpha changes
+  let allGrown=false;
+  let lastGA=-1;
+
+  function loop(){
+    if(!allGrown){
+      // Check if every plant has grown
+      allGrown=plants.every(p=>p.grown);
+    }
+
+    // Redraw only if needed
+    const needsDraw=!allGrown||(Math.abs(gardenGlobalAlpha-lastGA)>0.005);
+
+    if(needsDraw){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // garden background — soft green-sky gradient
+      const bg=ctx.createLinearGradient(0,0,0,canvas.height);
+      bg.addColorStop(0,hexA('#d4edda',1));
+      bg.addColorStop(0.4,hexA('#e8f5e2',1));
+      bg.addColorStop(1,hexA('#f5fdf0',1));
+      ctx.fillStyle=bg;ctx.fillRect(0,0,canvas.width,canvas.height);
+      // ground strip
+      const ground=ctx.createLinearGradient(0,canvas.height-60,0,canvas.height);
+      ground.addColorStop(0,hexA('#6faa48',0.6));
+      ground.addColorStop(1,hexA('#4a7c35',0.85));
+      ctx.fillStyle=ground;
+      ctx.fillRect(0,canvas.height-60,canvas.width,60);
+
+      plants.forEach(p=>{p.update();p.draw(gardenGlobalAlpha);});
+      lastGA=gardenGlobalAlpha;
+    }
+
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  /* ════════════════════
+     SCROLL
+  ════════════════════ */
+  const garden=document.getElementById('page-garden');
+  const heroFade=document.getElementById('hero-fade');
+  const heroEl=document.getElementById('garden-hero');
+  const calLabel=document.getElementById('cal-label');
+  const flipRow=document.getElementById('flip-row');
+  const calSection=document.getElementById('calendar-section');
+
+  garden.addEventListener('scroll',onScroll,{passive:true});
+
+  function onScroll(){
+    const sy=garden.scrollTop;
+    const wh=window.innerHeight;
+
+    // Hero fade: starts after 15% of viewport scroll, fully faded at ~90% of spacer
+    const fadeProg=Math.min(1,Math.max(0,(sy-wh*0.12)/(wh*0.72)));
+    heroFade.style.opacity=fadeProg;
+    heroEl.style.opacity=Math.max(0,1-fadeProg);
+    gardenGlobalAlpha=Math.max(0,1-fadeProg);
+
+    // Calendar trigger
+    const cs=calSection.getBoundingClientRect();
+    if(cs.top<wh*0.8){
+      calLabel.classList.add('show');
+      flipRow.classList.add('show');
+      if(!calStarted){calStarted=true;setTimeout(startCalendarFlip,600);}
+    }
+  }
+}
+
+/* ════════════════════════════════════
+   FLIP CALENDAR — Apr 2 2026 → May 2 2026
+   Fast start, dramatically slows near end
+════════════════════════════════════ */
+const MONTHS_S=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// Start: April 2 2026  |  End: May 2 2026  (30 days)
+const SM=3,SD=2,SY=2026; // start (April=index 3)
+const TM=4,TD=2,TY=2026; // target (May=index 4)
+const TOTAL_DAYS=30;
+
+function pad2(n){return String(n).padStart(2,'0');}
+
+function flipSet(cid,sid,val){
+  const card=document.getElementById(cid);
+  const span=document.getElementById(sid);
+  card.classList.remove('flipping');
+  void card.offsetWidth;
+  span.textContent=val;
+  card.classList.add('flipping');
+}
+
+function startCalendarFlip(){
+  let m=SM,d=SD,y=SY;
+  let tick=0;
+  let lastM=-1,lastD=-1,lastY=-1;
+
+  flipSet('fc-month','fv-month',MONTHS_S[m]);
+  flipSet('fc-day','fv-day',pad2(d));
+  flipSet('fc-year','fv-year',String(y));
+
+  function advance(){
+    // At start and fast middle skip multiple days, slow near end
+    const prog=tick/TOTAL_DAYS;
+    let skip=1;
+    if(prog<0.12) skip=1;           // slow start
+    else if(prog<0.75) skip=2;      // fast blur through the month
+    else skip=1;                    // slow down approaching the end
+    for(let s=0;s<skip;s++){
+      d++;
+      const dim=[31,28+(y%4===0?1:0),31,30,31,30,31,31,30,31,30,31];
+      if(d>dim[m]){d=1;m++;}
+      if(m>11){m=0;y++;}
+      if(m===TM&&d===TD&&y===TY)break;
+    }
+    if((y===TY&&m===TM&&d>=TD)||y>TY){m=TM;d=TD;y=TY;}
+  }
+
+  // Interval: fast at start, gets dramatically slower near May 2
+  function intv(){
+    const prog=tick/TOTAL_DAYS;
+    if(prog<0.06)  return 220;   // slow ramp-up
+    if(prog<0.15)  return 90;    // accelerating
+    if(prog<0.70)  return 35;    // fast blur
+    if(prog<0.82)  return 80;    // slowing
+    if(prog<0.90)  return 160;   // slow
+    if(prog<0.95)  return 300;   // very slow
+    return 520;                  // near stop — savour the last days
+  }
+
+  function doTick(){
+    advance();tick++;
+    if(m!==lastM){flipSet('fc-month','fv-month',MONTHS_S[m]);lastM=m;}
+    if(d!==lastD){flipSet('fc-day','fv-day',pad2(d));lastD=d;}
+    if(y!==lastY){flipSet('fc-year','fv-year',String(y));lastY=y;}
+
+    const done=(m===TM&&d===TD&&y===TY);
+    if(!done){
+      setTimeout(doTick,intv());
+    } else {
+      // Reached May 2, 2026
+      setTimeout(()=>{
+        document.getElementById('final-date').classList.add('show');
+        setTimeout(()=>{
+          document.getElementById('drop-message').classList.add('show');
+          setTimeout(()=>document.getElementById('btn-next-wrap').classList.add('show'),1000);
+        },1200);
+      },800);
+    }
+  }
+  setTimeout(doTick,600);
+}
+
+/* ── NEXT PAGE placeholder ── */
+function goToNextPage(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9999;background:#fef2f7;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity 1.2s ease;';
+  ov.innerHTML=`
+    <div style="text-align:center;padding:40px;">
+      <div style="font-size:52px;margin-bottom:20px;animation:fl 2.5s ease-in-out infinite;">🌸</div>
+      <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,5vw,38px);font-weight:300;letter-spacing:6px;
+        background:linear-gradient(90deg,#c0446e,#e8639a,#c07ab0,#e8639a,#c0446e);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:300%;animation:sh 4s linear infinite;">
+        Your surprise continues…
+      </h1>
+      <p style="margin-top:18px;color:#b57a90;font-size:12px;letter-spacing:3px;">♡ &nbsp; page 2 coming soon &nbsp; ♡</p>
+    </div>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&display=swap');
+      @keyframes fl{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-10px) rotate(3deg)}}
+      @keyframes sh{0%{background-position:0%}100%{background-position:300%}}
+    </style>`;
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>ov.style.opacity='1'));
+}
+</script>
+</body>
+</html>

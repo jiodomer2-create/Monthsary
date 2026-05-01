@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Helvetica+Neue&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --fb-blue: #1877f2;
+    --fb-blue-hover: #166fe5;
+    --bg-dark: #1c1e21;
+    --input-bg: #3a3b3c;
+    --text-light: #e4e6eb;
+    --text-muted: #b0b3b8;
+    --card-bg: #242526;
+    --border: #3e4042;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* ── SLIDESHOW BACKGROUND ── */
+  #slideshow {
+    position: fixed; inset: 0; z-index: 0;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    filter: brightness(0.35) saturate(1.2);
+  }
+  .slide.active { opacity: 1; }
+
+  /* Gradient overlays simulating romantic photography */
+  .slide:nth-child(1) { background: radial-gradient(ellipse at 30% 60%, #2d0a3a 0%, #0a0a1a 50%, #000510 100%), url('') center/cover; background-blend-mode: overlay; }
+  .slide:nth-child(2) { background: radial-gradient(ellipse at 70% 40%, #1a0a2e 0%, #050515 50%, #000 100%), url('') center/cover; background-blend-mode: overlay; }
+  .slide:nth-child(3) { background: radial-gradient(ellipse at 50% 70%, #0a1a2e 0%, #050a15 50%, #000 100%), url('') center/cover; background-blend-mode: overlay; }
+  .slide:nth-child(4) { background: radial-gradient(ellipse at 20% 30%, #1a0a1a 0%, #0a0510 50%, #000 100%), url('') center/cover; background-blend-mode: overlay; }
+
+  /* Animated bokeh circles to simulate background photos */
+  .slide::before, .slide::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255,180,220,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(180,160,255,0.12) 0%, transparent 35%),
+      radial-gradient(circle at 60% 80%, rgba(255,150,200,0.1) 0%, transparent 30%),
+      radial-gradient(circle at 10% 10%, rgba(200,180,255,0.08) 0%, transparent 25%);
+  }
+
+  /* Star particles */
+  #stars {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d) ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.4); }
+  }
+
+  /* ── LOGIN OVERLAY ── */
+  #login-page {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+
+  .fb-logo-wrap {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    margin-bottom: 8px;
+  }
+  .fb-logo-wrap svg {
+    filter: drop-shadow(0 0 20px rgba(24,119,242,0.6));
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(24,119,242,0.5)); }
+    50% { filter: drop-shadow(0 0 35px rgba(24,119,242,0.9)); }
+  }
+  .fb-tagline {
+    color: var(--text-muted);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  .login-card {
+    background: rgba(36, 37, 38, 0.92);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 396px;
+    box-shadow:
+      0 4px 60px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(24,119,242,0.1),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .input-group {
+    margin-bottom: 12px;
+  }
+  .input-group input {
+    width: 100%;
+    background: rgba(58, 59, 60, 0.8);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: var(--text-light);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: inherit;
+  }
+  .input-group input::placeholder { color: var(--text-muted); }
+  .input-group input:focus {
+    border-color: var(--fb-blue);
+    background: rgba(58, 59, 60, 1);
+    box-shadow: 0 0 0 3px rgba(24,119,242,0.15);
+  }
+
+  .error-msg {
+    color: #e75454;
+    font-size: 13px;
+    text-align: center;
+    margin-top: -4px;
+    margin-bottom: 8px;
+    display: none;
+    animation: shake 0.4s ease;
+  }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+  .error-msg.visible { display: block; }
+
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: var(--fb-blue);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 20px rgba(24,119,242,0.4);
+    font-family: inherit;
+  }
+  .btn-login:hover {
+    background: var(--fb-blue-hover);
+    box-shadow: 0 4px 28px rgba(24,119,242,0.6);
+    transform: translateY(-1px);
+  }
+  .btn-login:active { transform: translateY(0); }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 16px 0;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--border);
+  }
+  .divider span { color: var(--text-muted); font-size: 13px; }
+
+  .hint-text {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .heart-hint { color: #e75a7d; }
+
+
+  /* ── FIREWORKS / LILY CANVAS ── */
+  #fireworks-page {
+    position: fixed; inset: 0; z-index: 50;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #fireworks-page.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  #lily-canvas {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+  }
+  .transition-text {
+    position: relative; z-index: 2;
+    text-align: center;
+    color: white;
+    opacity: 0;
+    transition: opacity 1.5s ease 1.5s;
+    pointer-events: none;
+  }
+  #fireworks-page.show .transition-text {
+    opacity: 1;
+  }
+  .transition-text h2 {
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,230,240,0.9);
+    text-shadow: 0 0 30px rgba(255,150,200,0.8), 0 0 60px rgba(255,100,180,0.4);
+    margin-bottom: 8px;
+  }
+  .transition-text p {
+    font-size: 14px;
+    color: rgba(255,200,220,0.7);
+    letter-spacing: 2px;
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDESHOW -->
+<div id="slideshow">
+  <div class="slide active"></div>
+  <div class="slide"></div>
+  <div class="slide"></div>
+  <div class="slide"></div>
+</div>
+
+<!-- STARS -->
+<div id="stars"></div>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="fb-logo-wrap">
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="30" cy="30" r="30" fill="#1877f2"/>
+      <path d="M38.5 30H33v-4c0-1.4.7-2 2.1-2H38V18h-4.5C28.4 18 26 21.2 26 25v5h-4v6h4v15h7V36h4.5l1-6z" fill="white"/>
+    </svg>
+    <span class="fb-tagline">Connect with the people you love</span>
+  </div>
+
+  <div class="login-card">
+    <div class="input-group">
+      <input type="text" id="username" placeholder="Email or phone number" autocomplete="username">
+    </div>
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+    </div>
+    <div class="error-msg" id="error-msg">Incorrect username or password. Try again.</div>
+    <button class="btn-login" onclick="handleLogin()">Log in</button>
+    <div class="divider"><span>or</span></div>
+    <div class="hint-text">
+      Something special is waiting for you <span class="heart-hint">♥</span><br>
+      Enter your credentials to continue
+    </div>
+  </div>
+</div>
+
+<!-- FIREWORKS / LILY TRANSITION PAGE -->
+<div id="fireworks-page">
+  <canvas id="lily-canvas"></canvas>
+  <div class="transition-text">
+    <h2>Opening your gift…</h2>
+    <p>just a moment ♡</p>
+  </div>
+</div>
+
+<script>
+// ── STARS ──
+(function(){
+  const container = document.getElementById('stars');
+  for(let i=0;i<120;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const size = Math.random()*2.5+0.5;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --d:${(Math.random()*3+2).toFixed(1)}s;
+      --delay:${(Math.random()*4).toFixed(1)}s;
+      opacity:${Math.random()*0.4+0.1};
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── SLIDESHOW ──
+(function(){
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  setInterval(()=>{
+    slides[current].classList.remove('active');
+    current = (current+1)%slides.length;
+    slides[current].classList.add('active');
+  }, 4000);
+})();
+
+// ── LOGIN ──
+function handleLogin(){
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const err  = document.getElementById('error-msg');
+
+  const validUser = user.toLowerCase() === 'yollylen abasola';
+  const validPass = pass === '04022026';
+
+  if(validUser && validPass){
+    err.classList.remove('visible');
+    startLilyFireworks();
+  } else {
+    err.classList.add('visible');
+    err.style.animation='none';
+    requestAnimationFrame(()=>{ err.style.animation=''; });
+  }
+}
+
+// Allow Enter key
+document.addEventListener('keydown', e=>{ if(e.key==='Enter') handleLogin(); });
+
+// ── LILY NEON FIREWORKS ──
+function startLilyFireworks(){
+  const loginPage = document.getElementById('login-page');
+  const fwPage    = document.getElementById('fireworks-page');
+  const canvas    = document.getElementById('lily-canvas');
+  const ctx       = canvas.getContext('2d');
+
+  loginPage.style.opacity = '0';
+  setTimeout(()=>{ loginPage.style.display='none'; }, 600);
+
+  fwPage.style.display='flex';
+  fwPage.style.transition = 'opacity 0.8s ease';
+  setTimeout(()=>{ fwPage.classList.add('show'); }, 50);
+
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener('resize',()=>{
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  const rockets = [];
+  const particles = [];
+
+  // Neon lily colors
+  const lilyPalettes = [
+    ['#ff6eb4','#ff9de2','#ffc8ef','#ff4d9e'],
+    ['#d97fff','#c26bff','#a53aff','#e8b4ff'],
+    ['#ff85a1','#ff5c8a','#ff3366','#ffb3c6'],
+    ['#7dd8ff','#4dc9ff','#00aaff','#b8eeff'],
+    ['#ffe066','#ffcc00','#ffaa00','#fff4b3'],
+    ['#a0ffb8','#50ff8a','#00e65c','#c8ffdb'],
+  ];
+
+  function randomPalette(){ return lilyPalettes[Math.floor(Math.random()*lilyPalettes.length)]; }
+
+  // Draw a neon lily petal shape
+  function drawLilyPetal(ctx, x, y, angle, length, width, color, alpha){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(angle);
+    ctx.globalAlpha = alpha;
+
+    // Outer glow
+    const grd = ctx.createLinearGradient(0,0,0,-length);
+    grd.addColorStop(0, color+'00');
+    grd.addColorStop(0.3, color+'aa');
+    grd.addColorStop(0.7, color+'ff');
+    grd.addColorStop(1, color+'cc');
+
+    ctx.shadowColor = color;
+    ctx.shadowBlur  = 12;
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = width;
+    ctx.lineCap     = 'round';
+
+    ctx.beginPath();
+    // Curved petal
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo(
+      width*2, -length*0.3,
+      width*3, -length*0.7,
+      0, -length
+    );
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.bezierCurveTo(
+      -width*2, -length*0.3,
+      -width*3, -length*0.7,
+      0, -length
+    );
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  // Full lily bloom at a point
+  function drawLily(ctx, x, y, size, palette, alpha, rotation){
+    const petalCount = 6;
+    for(let i=0;i<petalCount;i++){
+      const angle = (i/petalCount)*Math.PI*2 + rotation;
+      const color = palette[i%palette.length];
+      drawLilyPetal(ctx, x, y, angle, size, size*0.12, color, alpha);
+    }
+
+    // Center stamen glow
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const cg = ctx.createRadialGradient(x,y,0, x,y,size*0.25);
+    cg.addColorStop(0, palette[0]+'ff');
+    cg.addColorStop(0.4,'#ffffff88');
+    cg.addColorStop(1, palette[1]+'00');
+    ctx.shadowColor = palette[0];
+    ctx.shadowBlur  = 20;
+    ctx.fillStyle   = cg;
+    ctx.beginPath();
+    ctx.arc(x,y,size*0.18,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  class Rocket {
+    constructor(){
+      this.x = canvas.width * (0.15 + Math.random()*0.7);
+      this.y = canvas.height + 10;
+      this.tx = canvas.width * (0.1 + Math.random()*0.8);
+      this.ty = canvas.height * (0.05 + Math.random()*0.45);
+      this.speed = 6 + Math.random()*4;
+      this.palette = randomPalette();
+      this.trail = [];
+
+      const dx = this.tx - this.x;
+      const dy = this.ty - this.y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      this.vx = (dx/dist)*this.speed;
+      this.vy = (dy/dist)*this.speed;
+      this.done = false;
+    }
+    update(){
+      this.trail.push({x:this.x, y:this.y});
+      if(this.trail.length>12) this.trail.shift();
+
+      this.x += this.vx;
+      this.y += this.vy;
+
+      const dx = this.tx - this.x;
+      const dy = this.ty - this.y;
+      if(Math.sqrt(dx*dx+dy*dy) < 10){
+        this.done = true;
+        explode(this.tx, this.ty, this.palette);
+      }
+    }
+    draw(){
+      // Trail
+      for(let i=0;i<this.trail.length;i++){
+        const t = i/this.trail.length;
+        ctx.save();
+        ctx.globalAlpha = t*0.6;
+        ctx.shadowColor = this.palette[0];
+        ctx.shadowBlur  = 8;
+        ctx.beginPath();
+        ctx.arc(this.trail[i].x, this.trail[i].y, 2*t+0.5, 0, Math.PI*2);
+        ctx.fillStyle = this.palette[0];
+        ctx.fill();
+        ctx.restore();
+      }
+      // Head
+      ctx.save();
+      ctx.shadowColor = this.palette[1];
+      ctx.shadowBlur  = 15;
+      ctx.fillStyle   = '#fff';
+      ctx.globalAlpha = 0.95;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  class LilyParticle {
+    constructor(x, y, palette){
+      this.x = x; this.y = y;
+      this.palette = palette;
+      this.angle   = Math.random()*Math.PI*2;
+      this.speed   = 1.5 + Math.random()*3;
+      this.vx = Math.cos(this.angle)*this.speed;
+      this.vy = Math.sin(this.angle)*this.speed;
+      this.life    = 1;
+      this.decay   = 0.012 + Math.random()*0.008;
+      this.size    = 18 + Math.random()*28;
+      this.rotation = Math.random()*Math.PI*2;
+      this.rotSpeed = (Math.random()-0.5)*0.05;
+      this.gravity  = 0.04 + Math.random()*0.03;
+    }
+    update(){
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += this.gravity;
+      this.vx *= 0.98;
+      this.life -= this.decay;
+      this.rotation += this.rotSpeed;
+    }
+    draw(){
+      if(this.life<=0) return;
+      drawLily(ctx, this.x, this.y, this.size, this.palette, Math.max(0,this.life), this.rotation);
+    }
+    get dead(){ return this.life <= 0; }
+  }
+
+  // Sparkle class
+  class Sparkle {
+    constructor(x, y, color){
+      this.x=x; this.y=y; this.color=color;
+      this.vx=(Math.random()-0.5)*8;
+      this.vy=(Math.random()-0.5)*8;
+      this.life=1;
+      this.decay=0.025+Math.random()*0.02;
+      this.size=1+Math.random()*2.5;
+      this.gravity=0.07;
+    }
+    update(){
+      this.x+=this.vx; this.y+=this.vy;
+      this.vy+=this.gravity;
+      this.vx*=0.97;
+      this.life-=this.decay;
+    }
+    draw(){
+      if(this.life<=0) return;
+      ctx.save();
+      ctx.globalAlpha=Math.max(0,this.life);
+      ctx.shadowColor=this.color;
+      ctx.shadowBlur=8;
+      ctx.fillStyle=this.color;
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+    get dead(){ return this.life<=0; }
+  }
+
+  function explode(x, y, palette){
+    const count = 18 + Math.floor(Math.random()*14);
+    for(let i=0;i<count;i++){
+      particles.push(new LilyParticle(x,y,palette));
+    }
+    // Extra sparkles
+    const sc = 30 + Math.floor(Math.random()*20);
+    for(let i=0;i<sc;i++){
+      particles.push(new Sparkle(x,y, palette[Math.floor(Math.random()*palette.length)]));
+    }
+  }
+
+  let launchTimer = 0;
+  let launchInterval = 18;
+  let totalTime = 0;
+  const duration = 5200; // ms
+
+  function animate(ts){
+    if(!animate.start) animate.start=ts;
+    totalTime = ts - animate.start;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    launchTimer++;
+    if(launchTimer >= launchInterval && totalTime < duration-800){
+      rockets.push(new Rocket());
+      launchTimer=0;
+      launchInterval = 12 + Math.floor(Math.random()*15);
+    }
+
+    for(let i=rockets.length-1;i>=0;i--){
+      rockets[i].update();
+      rockets[i].draw();
+      if(rockets[i].done) rockets.splice(i,1);
+    }
+    for(let i=particles.length-1;i>=0;i--){
+      particles[i].update();
+      particles[i].draw();
+      if(particles[i].dead) particles.splice(i,1);
+    }
+
+    if(totalTime < duration || rockets.length>0 || particles.length>0){
+      requestAnimationFrame(animate);
+    } else {
+      // Go to next page (placeholder)
+      goToNextPage();
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function goToNextPage(){
+  const fwPage = document.getElementById('fireworks-page');
+  // This will be replaced with actual next page in future prompts
+  const next = document.createElement('div');
+  next.style.cssText=`
+    position:fixed;inset:0;z-index:100;
+    background:linear-gradient(135deg,#0a0010 0%,#0d0020 50%,#050015 100%);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;transition:opacity 1.5s ease;
+  `;
+  next.innerHTML=`
+    <div style="text-align:center;color:white;padding:40px;">
+      <div style="font-size:48px;margin-bottom:16px;animation:pulse 2s ease infinite;">🌸</div>
+      <h1 style="font-size:clamp(20px,5vw,32px);font-weight:300;letter-spacing:6px;text-transform:uppercase;
+        background:linear-gradient(90deg,#ff6eb4,#d97fff,#ff6eb4);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;
+        animation:shimmer 3s linear infinite;">
+        More coming soon…
+      </h1>
+      <p style="margin-top:16px;color:rgba(255,200,220,0.6);font-size:14px;letter-spacing:2px;font-weight:300;">
+        ♡ loading your surprise ♡
+      </p>
+    </div>
+    <style>
+      @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+      @keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+    </style>
+  `;
+  document.body.appendChild(next);
+  fwPage.style.transition='opacity 1s ease';
+  fwPage.style.opacity='0';
+  setTimeout(()=>{
+    fwPage.style.display='none';
+    next.style.opacity='1';
+  }, 800);
+}
+</script>
+</body>
+</html>

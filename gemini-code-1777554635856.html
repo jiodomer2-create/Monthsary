@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Helvetica+Neue&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --fb-blue: #1877f2;
+    --fb-blue-hover: #166fe5;
+    --primary-pink: #d97fff; /* New pink color */
+    --primary-pink-hover: #c26bff; /* Hover state pink */
+    --bg-dark: #1c1e21;
+    --input-bg: #3a3b3c;
+    --text-light: #e4e6eb;
+    --text-muted: #b0b3b8;
+    --card-bg: #242526;
+    --border: #3e4042;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* ── SLIDESHOW BACKGROUND ── */
+  #slideshow {
+    position: fixed; inset: 0; z-index: 0;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    filter: brightness(0.35) saturate(1.2);
+  }
+  .slide.active { opacity: 1; }
+
+  /* Gradient overlays simulating romantic photography */
+  .slide:nth-child(1) { background: radial-gradient(ellipse at 30% 60%, #2d0a3a 0%, #0a0a1a 50%, #000510 100%), url('') center/cover; background-blend-mode: overlay; }
+  .slide:nth-child(2) { background: radial-gradient(ellipse at 70% 40%, #1a0a2e 0%, #050515 50%, #000 100%), url('') center/cover; background-blend-mode: overlay; }
+  .slide:nth-child(3) { background: radial-gradient(ellipse at 50% 70%, #0a1a2e 0%, #050a15 50%, #000 100%), url('') center/cover; background-blend-mode: overlay; }
+  .slide:nth-child(4) { background: radial-gradient(ellipse at 20% 30%, #1a0a1a 0%, #0a0510 50%, #000 100%), url('') center/cover; background-blend-mode: overlay; }
+
+  /* Animated bokeh circles to simulate background photos */
+  .slide::before, .slide::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255,180,220,0.15) 0%, transparent 40%),
+      radial-gradient(circle at 80% 20%, rgba(180,160,255,0.12) 0%, transparent 35%),
+      radial-gradient(circle at 60% 80%, rgba(255,150,200,0.1) 0%, transparent 30%),
+      radial-gradient(circle at 10% 10%, rgba(200,180,255,0.08) 0%, transparent 25%);
+  }
+
+  /* Star particles */
+  #stars {
+    position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    transition: opacity 1s ease; /* Add transition for star disappearance */
+  }
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: white;
+    animation: twinkle var(--d) ease-in-out infinite;
+    animation-delay: var(--delay);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.4); }
+  }
+
+  /* ── LOGIN OVERLAY ── */
+  #login-page {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px;
+    padding: 20px;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+
+  /* Removed fb-logo-wrap and all related pulse animations */
+
+  .login-card {
+    background: rgba(36, 37, 38, 0.92);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 396px;
+    box-shadow:
+      0 4px 60px rgba(0,0,0,0.8),
+      0 0 0 1px rgba(255,255,255,0.05), /* Remove blue shadow outline */
+      inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .input-group {
+    margin-bottom: 12px;
+  }
+  .input-group input {
+    width: 100%;
+    background: rgba(58, 59, 60, 0.8);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: var(--text-light);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    font-family: inherit;
+  }
+  .input-group input::placeholder { color: var(--text-muted); }
+  .input-group input:focus {
+    border-color: var(--primary-pink); /* Use pink focus border */
+    background: rgba(58, 59, 60, 1);
+    box-shadow: 0 0 0 3px rgba(217, 127, 255, 0.15); /* Pink shadow bloom */
+  }
+
+  .error-msg {
+    color: #e75454;
+I’ve stripped away the Facebook branding, updated the colors to a romantic pink theme, and completely reworked the transition. Instead of disappearing fireworks, the lilies now "bloom" and stay on the screen, creating a beautiful garden effect before a final pink button appears to take you to the surprise.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Special Moment</title>
+<style>
+  @import url('[https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Playfair+Display:ital,wght@0,400;1,600&display=swap](https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Playfair+Display:ital,wght@0,400;1,600&display=swap)');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink-primary: #ff6eb4;
+    --pink-hover: #ff4d9e;
+    --bg-dark: #0f0a10;
+    --input-bg: rgba(255, 255, 255, 0.07);
+    --text-light: #fce4ec;
+    --text-muted: #d8b4bc;
+    --card-bg: rgba(25, 15, 25, 0.85);
+    --border: rgba(255, 110, 180, 0.3);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: 'SF Pro Display', sans-serif;
+    background: #000;
+    overflow: hidden;
+  }
+
+  /* ── BACKGROUND ── */
+  #slideshow { position: fixed; inset: 0; z-index: 0; }
+  .slide {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at center, #2d0a20 0%, #000 100%);
+    opacity: 1;
+  }
+
+  #stars { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+  .star {
+    position: absolute; border-radius: 50%; background: white;
+    animation: twinkle var(--d) ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.3); }
+  }
+
+  /* ── LOGIN OVERLAY ── */
+  #login-page {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 20px; padding: 20px;
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .welcome-msg {
+    text-align: center; color: var(--pink-primary);
+    margin-bottom: 10px;
+  }
+  .welcome-msg h1 { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 2.5rem; font-style: italic;
+    text-shadow: 0 0 20px rgba(255, 110, 180, 0.4);
+  }
+
+  .login-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 32px;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.1);
+  }
+
+  .input-group { margin-bottom: 15px; }
+  .input-group input {
+    width: 100%; background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 15px;
+    font-size: 15px; color: #fff; outline: none;
+    transition: all 0.3s;
+  }
+  .input-group input:focus {
+    border-color: var(--pink-primary);
+    box-shadow: 0 0 15px rgba(255, 110, 180, 0.2);
+  }
+
+  .btn-pink {
+    width: 100%; padding: 15px;
+    background: var(--pink-primary);
+    color: #fff; font-size: 16px; font-weight: 600;
+    border: none; border-radius: 12px;
+    cursor: pointer; transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(255, 110, 180, 0.3);
+  }
+  .btn-pink:hover { background: var(--pink-hover); transform: translateY(-2px); }
+
+  .error-msg {
+    color: #ff5e5e; font-size: 13px; text-align: center;
+    margin-bottom: 10px; display: none;
+  }
+  .error-msg.visible { display: block; }
+
+  /* ── FLOWER GARDEN PAGE ── */
+  #garden-page {
+    position: fixed; inset: 0; z-index: 50;
+    background: #050205; display: none; opacity: 0;
+    transition: opacity 2s ease;
+  }
+  #lily-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .final-action {
+    position: absolute; bottom: 15%; left: 50%;
+    transform: translateX(-50%); z-index: 60;
+    opacity: 0; transition: opacity 2s ease 3s;
+    text-align: center;
+  }
+  .final-action.show { opacity: 1; }
+  
+  .btn-bloom {
+    background: transparent; border: 2px solid var(--pink-primary);
+    color: var(--pink-primary); padding: 15px 40px;
+    font-size: 18px; border-radius: 50px; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 2px;
+    transition: all 0.5s;
+  }
+  .btn-bloom:hover {
+    background: var(--pink-primary); color: #fff;
+    box-shadow: 0 0 30px var(--pink-primary);
+  }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div id="slideshow"><div class="slide"></div></div>
+
+<!-- LOGIN PAGE -->
+<div id="login-page">
+  <div class="welcome-msg">
+    <h1>Welcome, Love</h1>
+  </div>
+
+  <div class="login-card">
+    <div class="input-group">
+      <input type="text" id="username" placeholder="Username" autocomplete="off">
+    </div>
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Password">
+    </div>
+    <div class="error-msg" id="error-msg">That's not it, try again...</div>
+    <button class="btn-pink" onclick="handleLogin()">Enter My Heart</button>
+  </div>
+</div>
+
+<!-- FLOWER GARDEN PAGE -->
+<div id="garden-page">
+  <canvas id="lily-canvas"></canvas>
+  <div class="final-action" id="final-action">
+    <button class="btn-bloom" onclick="location.reload()">Open Your Gift 🌸</button>
+  </div>
+</div>
+
+<script>
+// ── STAR BACKGROUND ──
+(function(){
+  const container = document.getElementById('stars');
+  for(let i=0; i<150; i++){
+    const s = document.createElement('div');
+    s.className='star';
+    const size = Math.random()*2;
+    s.style.cssText=`
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --d:${(Math.random()*3+2)}s; animation-delay:${Math.random()*5}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── LOGIN LOGIC ──
+function handleLogin(){
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value.trim();
+  const err  = document.getElementById('error-msg');
+
+  // Same credentials from your original code
+  if(user.toLowerCase() === 'yollylen abasola' && pass === '04022026'){
+    startLilyGarden();
+  } else {
+    err.classList.add('visible');
+  }
+}
+
+// ── BLOOMING LILY GARDEN ──
+function startLilyGarden(){
+  const loginPage = document.getElementById('login-page');
+  const gardenPage = document.getElementById('garden-page');
+  const canvas = document.getElementById('lily-canvas');
+  const ctx = canvas.getContext('2d');
+
+  loginPage.style.opacity = '0';
+  loginPage.style.transform = 'scale(0.9)';
+  
+  setTimeout(() => {
+    loginPage.style.display = 'none';
+    gardenPage.style.display = 'block';
+    setTimeout(() => gardenPage.style.opacity = '1', 50);
+    document.getElementById('final-action').classList.add('show');
+  }, 1000);
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const lilies = [];
+  const colors = ['#ffb7d5', '#ff99c8', '#fce4ec', '#f8bbd0'];
+
+  class Lily {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.maxSize = 30 + Math.random() * 40;
+      this.size = 0;
+      this.growth = 0.5 + Math.random() * 0.8;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.rotation = Math.random() * Math.PI * 2;
+      this.alpha = 0;
+    }
+
+    draw() {
+      if (this.size < this.maxSize) this.size += this.growth;
+      if (this.alpha < 1) this.alpha += 0.02;
+
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation);
+      ctx.globalAlpha = this.alpha;
+
+      // Draw 6 Lilies Petals
+      for (let i = 0; i < 6; i++) {
+        ctx.rotate(Math.PI / 3);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        // Petal shape
+        ctx.bezierCurveTo(this.size/2, -this.size/2, this.size/2, -this.size, 0, -this.size);
+        ctx.bezierCurveTo(-this.size/2, -this.size, -this.size/2, -this.size/2, 0, 0);
+        
+        ctx.fillStyle = this.color;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        
+        // Petal vein
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Center
+      ctx.beginPath();
+      ctx.arc(0, 0, this.size/5, 0, Math.PI*2);
+      ctx.fillStyle = "#fff9c4";
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function addLily() {
+    if (lilies.length < 45) {
+      lilies.push(new Lily(Math.random() * canvas.width, Math.random() * canvas.height));
+    }
+  }
+
+  // Bloom lilies over time
+  const bloomInterval = setInterval(addLily, 200);
+  setTimeout(() => clearInterval(bloomInterval), 10000);
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    lilies.forEach(l => l.draw());
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+document.addEventListener('keydown', e => { if(e.key === 'Enter') handleLogin(); });
+</script>
+</body>
+</html>

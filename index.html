@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You ♡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow-x:hidden;}
+body{font-family:'Jost',sans-serif;background:#fdf0f5;color:#4a1228;}
+
+:root{
+  --pink:#e8639a;
+  --pink-deep:#c0446e;
+  --pink-light:#f9c0d8;
+  --cream:#fff8fb;
+  --mauve:#c2768e;
+  --text-dark:#4a1228;
+  --text-muted:#b57a90;
+  --border:rgba(232,99,154,0.28);
+  --card-bg:rgba(255,245,250,0.9);
+  --section-bg:#fef2f7;
+  --section-bg2:#fdeef5;
+}
+
+/* ════════════════════════
+    LOGIN
+════════════════════════ */
+#page-login {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; transition: opacity 2.5s ease-in-out;
+}
+#page-login.hide { opacity: 0; pointer-events: none; }
+
+#slideshow { position: absolute; inset: 0; z-index: 0; }
+.slide { position: absolute; inset: 0; opacity: 0; transition: opacity 2.8s ease-in-out; }
+.slide.active { opacity: 1; }
+.slide:nth-child(1) { background: radial-gradient(ellipse at 30% 60%,rgba(255,180,215,0.65) 0%,transparent 55%), radial-gradient(ellipse at 75% 25%,rgba(240,190,230,0.45) 0%,transparent 50%),#fce8f2; }
+.slide:nth-child(2) { background: radial-gradient(ellipse at 70% 55%,rgba(250,190,220,0.6) 0%,transparent 55%), radial-gradient(ellipse at 20% 30%,rgba(230,180,240,0.4) 0%,transparent 48%),#fbe4f0; }
+.slide:nth-child(3) { background: radial-gradient(ellipse at 50% 40%,rgba(245,185,220,0.55) 0%,transparent 55%), radial-gradient(ellipse at 10% 70%,rgba(255,200,230,0.4) 0%,transparent 45%),#fde9f3; }
+.slide:nth-child(4) { background: radial-gradient(ellipse at 35% 20%,rgba(240,185,235,0.5) 0%,transparent 55%), radial-gradient(ellipse at 65% 75%,rgba(255,195,225,0.45) 0%,transparent 50%),#fce7f1; }
+
+/* Entrance Animation for the Box */
+.login-wrap {
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px;
+  /* Rise up and fade in effect */
+  animation: riseUpFade 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes riseUpFade {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.login-title { text-align: center; }
+.lily-float { font-size: 30px; display: block; margin-bottom: 8px; animation: lf 3.5s ease-in-out infinite; }
+@keyframes lf { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-8px) rotate(4deg); } }
+.login-title h1 { font-family: 'Cormorant Garamond',serif; font-size: clamp(26px,6vw,40px); font-weight: 300; letter-spacing: 4px; color: var(--text-dark); }
+.login-title p { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--text-muted); margin-top: 5px; }
+
+.login-card {
+  background: var(--card-bg); backdrop-filter: blur(24px);
+  border: 1px solid var(--border); border-radius: 22px;
+  padding: 34px 28px 28px; width: 100%; max-width: 400px;
+  box-shadow: 0 8px 50px rgba(200,80,120,0.1);
+}
+
+.input-group { margin-bottom: 13px; }
+.input-group label { display: block; font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--mauve); margin-bottom: 6px; }
+.input-group input { 
+  width: 100%; background: rgba(255,255,255,0.75); 
+  border: 1.5px solid rgba(232,99,154,0.2); border-radius: 12px; 
+  padding: 14px 17px; font-size: 14px; color: var(--text-dark); 
+  font-family: 'Jost',sans-serif; outline: none; transition: all 0.3s ease;
+}
+.input-group input:focus { border-color: var(--pink); background: rgba(255,255,255,0.98); }
+
+.error-msg { color: #d0425a; font-size: 12px; text-align: center; margin: -3px 0 11px; display: none; animation: shake .4s ease; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+.error-msg.show { display: block; }
+
+/* Redesigned Button with Fill Animation */
+.btn-login {
+  position: relative;
+  width: 100%; padding: 15px;
+  background: transparent; /* Transparent to see the fill */
+  color: var(--pink-deep); /* Initial text color */
+  font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+  border: 1.5px solid var(--pink); border-radius: 12px;
+  cursor: pointer; overflow: hidden; z-index: 1;
+  transition: color 0.4s ease;
+}
+
+/* The Fill Layer */
+.btn-login::before {
+  content: "";
+  position: absolute; top: 0; left: -100%; /* Start outside on the left */
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #f4a0c8 0%, #e8639a 40%, #c0446e 100%);
+  transition: left 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  z-index: -1;
+}
+
+.btn-login:hover { color: #fff; border-color: transparent; }
+.btn-login:hover::before { left: 0; } /* Slides to the right to fill */
+
+.card-footer { margin-top: 18px; text-align: center; font-size: 11.5px; color: var(--text-muted); }
+.card-footer .accent { color: var(--pink); }
+
+/* ════════════════════════
+   MASSIVE FLOWER EXPLOSION
+════════════════════════ */
+#explosion-container {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 9999; pointer-events: none; width: 0; height: 0; overflow: visible;
+}
+.exp-petal {
+  position: absolute; 
+  top: 50%; left: 50%;
+  margin-top: calc(var(--h) / -2);
+  margin-left: calc(var(--w) / -2);
+  opacity: 0;
+  /* Increased to 6 seconds for a very smooth, slow experience */
+  animation: explode 6s cubic-bezier(0.2, 0, 0.3, 1) forwards;
+}
+
+@keyframes explode {
+  0% { 
+    transform: scale(0) rotate(0deg) translate(0, 0); 
+    opacity: 0; 
+  }
+  /* Reaches full screen coverage by 15% of the time */
+  15% { 
+    opacity: 1; 
+  }
+  /* Remains fully visible and opaque until 60% of the duration */
+  60% { 
+    opacity: 1; 
+  }
+  /* Very slow fade-out from 60% to 100% */
+  100% { 
+    transform: scale(2.2) rotate(var(--rot)) translate(var(--tx), var(--ty)); 
+    opacity: 0; 
+  }
+}
+
+/* ════════════════════════
+   DASHBOARD PAGE & HEADER
+════════════════════════ */
+#page-dashboard{
+  display:none; opacity:0; transition:opacity 2s ease-in-out;
+  min-height: 100vh; background: var(--section-bg); padding-bottom: 50px;
+}
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,245,250,0.85); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border); padding: 20px;
+  display: flex; justify-content: center; gap: 30px;
+}
+header button {
+  background: none; border: none; font-family: 'Jost', sans-serif;
+  font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--text-muted); cursor: pointer; transition: color 0.3s;
+}
+header button.active, header button:hover { color: var(--pink-deep); font-weight: 500; }
+
+.tab-content { display: none; animation: fadeIn 1s ease; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+
+/* ── SIDE BY SIDE MAIN SECTION ── */
+.main-content-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  padding: 80px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  flex-wrap: wrap; /* Stacks on small screens */
+}
+
+.video-container {
+  flex: 1;
+  min-width: 320px;
+  max-width: 700px;
+}
+.video-frame{
+  width:100%; aspect-ratio:16/9;
+  background:linear-gradient(135deg,#fde8f0 0%,#f9d0e4 40%,#fce0ee 100%);
+  border:2px solid rgba(232,99,154,0.2); border-radius:18px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 50px rgba(200,80,120,0.1); overflow:hidden;
+}
+.video-frame video{width:100%;height:100%;object-fit:cover; display:block;}
+
+.calendar-container {
+  flex: 1;
+  min-width: 320px;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Calendar Cards */
+.flip-row{display:flex;gap:16px;justify-content:center;}
+.flip-unit{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.flip-card{width:100px;height:120px;position:relative;perspective:700px;}
+.flip-face{
+  position:absolute;inset:0; background:linear-gradient(180deg,#ffffff 0%,#fdf2f6 50%,#fae8f0 100%);
+  border:1px solid rgba(232,99,154,0.22);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 24px rgba(200,80,120,0.1);
+}
+.flip-face span{font-family:'Cormorant Garamond',serif;font-size:36px;color:var(--text-dark);}
+.flip-card.flipping{animation:flip .1s ease-in-out;}
+@keyframes flip{0%{transform:rotateX(0);}50%{transform:rotateX(-88deg);}100%{transform:rotateX(0);}}
+
+.final-date, .drop-message { text-align: center; opacity: 0; transition: opacity 1s; }
+.final-date.show, .drop-message.show { opacity: 1; }
+.final-date h2{font-family:'Cormorant Garamond',serif; font-size:36px; color:var(--pink-deep);}
+
+/* ── SCROLLING GALLERY ── */
+.gallery-feed {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 40px; padding: 60px 20px;
+  max-width: 800px; margin: 0 auto;
+}
+.gallery-item {
+  width: 100%; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 10px 40px rgba(200,80,120,0.15); border: 4px solid #fff;
+  background: var(--pink-light);
+}
+.gallery-item img { 
+  width: 100%; height: auto; display: block; 
+}
+
+</style>
+</head>
+<body>
+
+<!-- ADD YOUR SONG FILE NAME HERE -->
+<audio id="bg-audio" src="JVKE - her (official lyric video).mp3" loop></audio>
+
+<!-- LOGIN -->
+<div id="page-login">
+  <div id="slideshow">
+    <div class="slide active"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+    <div class="slide"></div>
+  </div>
+  <div class="login-wrap">
+    <div class="login-title">
+      <span class="lily-float">🌸</span>
+      <h1>Something for you</h1>
+      <p>enter your details to open your gift</p>
+    </div>
+    <div class="login-card">
+      <div class="input-group">
+        <label>Your Name</label>
+        <input type="text" id="username" placeholder="Full name">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      <div class="error-msg" id="error-msg">Hmm, that doesn't seem right. Try again ♡</div>
+      <button class="btn-login" onclick="handleLogin()">Open My Gift</button>
+    </div>
+  </div>
+</div>
+
+<div id="explosion-container"></div>
+
+<!-- NEW DASHBOARD -->
+<div id="page-dashboard">
+  <header>
+    <button class="nav-btn active" onclick="switchTab('main', this)">Main</button>
+    <button class="nav-btn" onclick="switchTab('gallery', this)">Gallery</button>
+    <button class="nav-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <!-- Main Tab (Side by Side) -->
+  <div id="tab-main" class="tab-content active">
+    <div class="main-content-row">
+      
+      <!-- LEFT SIDE: VIDEO -->
+      <div class="video-container">
+        <div class="video-frame">
+          <!-- ADD YOUR VIDEO FILE NAME HERE -->
+          <video src="ourvideo.mp4" controls muted loop></video>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE: CALENDAR -->
+<div class="calendar-container" id="calendar-trigger">
+  <!-- Instruction text that disappears on hover -->
+  <p id="hover-instruction" style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--pink-deep); margin-bottom: 15px; transition: opacity 0.5s;">
+    ✦ Hover to reveal our date ✦
+  </p>
+
+  <div class="flip-row" id="flip-row">
+    <div class="flip-unit"><div class="flip-card" id="fc-month"><div class="flip-face"><span id="fv-month">Apr</span></div></div></div>
+    <div class="flip-unit"><div class="flip-card" id="fc-day"><div class="flip-face"><span id="fv-day">02</span></div></div></div>
+    <div class="flip-unit"><div class="flip-card" id="fc-year"><div class="flip-face"><span id="fv-year">2026</span></div></div></div>
+  </div>
+
+  <div class="final-date" id="final-date">
+    <h2>May 02, 2026</h2>
+    <p style="color:var(--text-muted); letter-spacing:3px;">our first monthsary ♡</p>
+  </div>
+
+  <div class="drop-message" id="drop-message">
+    <h3 style="font-family:'Cormorant Garamond'; font-size:28px; color:var(--pink-deep); font-style:italic;">"1 month down, a lifetime to go."</h3>
+  </div>
+</div>
+
+<script>
+/* ── SLIDESHOW ── */
+(function(){
+  const s=document.querySelectorAll('.slide');let c=0;
+  setInterval(()=>{s[c].classList.remove('active');c=(c+1)%s.length;s[c].classList.add('active');},4800);
+})();
+
+/* ── LOGIN LOGIC ── */
+function handleLogin(){
+  const u=document.getElementById('username').value.trim();
+  const p=document.getElementById('password').value.trim();
+  const e=document.getElementById('error-msg');
+  
+  // Credentials Check
+  if(u.toLowerCase()==='yollylen abasola' && p==='04022026'){
+    e.classList.remove('show');
+    
+    const audio = document.getElementById('bg-audio');
+    audio.play().catch(err => console.log("Audio autoplay blocked."));
+
+    createExplosion();
+
+    const lp=document.getElementById('page-login');
+    lp.classList.add('hide'); 
+    
+    setTimeout(()=>{
+      lp.style.display='none';
+      const dash = document.getElementById('page-dashboard');
+      dash.style.display = 'block';
+      
+      setTimeout(() => {
+        dash.style.opacity = '1';
+        // Note: startCalendarFlip() is NO LONGER called here. 
+        // It waits for the hover event listener below.
+      }, 100);
+    }, 3500); 
+
+  } else {
+    e.classList.remove('show');
+    void e.offsetWidth;
+    e.classList.add('show');
+  }
+}
+document.addEventListener('keydown',ev=>{if(ev.key==='Enter')handleLogin();});
+
+/* ── HOVER TO REVEAL LOGIC ── */
+let animationStarted = false;
+
+document.getElementById('calendar-trigger').addEventListener('mouseenter', function() {
+  if (!animationStarted) {
+    animationStarted = true;
+    
+    // Fade out the instruction text
+    const instruction = document.getElementById('hover-instruction');
+    instruction.style.opacity = '0';
+    
+    // Start the flip animation
+    startCalendarFlip(); 
+    
+    // Optional: Completely remove instruction from layout after fade
+    setTimeout(() => { instruction.style.display = 'none'; }, 500);
+  }
+});
+
+/* ── MASSIVE CUSTOM FLOWER EXPLOSION ── */
+function createExplosion() {
+  const container = document.getElementById('explosion-container');
+  container.innerHTML = ''; 
+  const customImages = [
+    'url("pink-lily-blossom-on-a-white-background-png.png")',
+    'url("pngtree-simple-pink-flower-png-image_11607032.png")',
+    'url("rose-flower-watercolor-hand-paint-free-png.png")'
+  ];
+
+  for(let i=0; i<200; i++) {
+    const petal = document.createElement('div');
+    petal.className = 'exp-petal';
+    petal.style.backgroundImage = customImages[Math.floor(Math.random() * customImages.length)];
+    petal.style.backgroundSize = 'contain';
+    petal.style.backgroundRepeat = 'no-repeat';
+    petal.style.backgroundPosition = 'center';
+    
+    const size = 200 + Math.random() * 400; 
+    petal.style.setProperty('--w', `${size}px`);
+    petal.style.setProperty('--h', `${size}px`);
+    petal.style.width = `${size}px`;
+    petal.style.height = `${size}px`;
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 50 + Math.random() * 1500; 
+    const tx = Math.cos(angle) * distance;
+    const ty = Math.sin(angle) * distance;
+    
+    petal.style.setProperty('--tx', `${tx}px`);
+    petal.style.setProperty('--ty', `${ty}px`);
+    petal.style.setProperty('--rot', `${(Math.random() - 0.5) * 360}deg`);
+    petal.style.animationDelay = `${Math.random() * 0.8}s`;
+    
+    container.appendChild(petal);
+  }
+}
+
+/* ── TAB NAVIGATION ── */
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ── LOGOUT LOGIC ── */
+function logout() {
+  const audio = document.getElementById('bg-audio');
+  audio.pause();
+  audio.currentTime = 0;
+
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+
+  const dash = document.getElementById('page-dashboard');
+  dash.style.opacity = '0';
+  
+  setTimeout(() => {
+    dash.style.display = 'none';
+    const lp=document.getElementById('page-login');
+    lp.style.display = 'flex';
+    setTimeout(() => {
+      lp.classList.remove('hide');
+      
+      // RESET CALENDAR STATE for next time
+      animationStarted = false;
+      document.getElementById('final-date').classList.remove('show');
+      document.getElementById('drop-message').classList.remove('show');
+      const inst = document.getElementById('hover-instruction');
+      inst.style.display = 'block';
+      inst.style.opacity = '1';
+      
+      // Reset text to initial date
+      document.getElementById('fv-month').textContent = 'Apr';
+      document.getElementById('fv-day').textContent = '02';
+      document.getElementById('fv-year').textContent = '2026';
+    }, 100);
+  }, 1500);
+}
+
+/* ── CALENDAR FLIP ANIMATION ── */
+const MONTHS_S=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const SM=3,SD=2,SY=2026; const TM=4,TD=2,TY=2026; const TOTAL_DAYS=30;
+
+function pad2(n){return String(n).padStart(2,'0');}
+
+function flipSet(cid,sid,val){
+  const card=document.getElementById(cid);
+  const span=document.getElementById(sid);
+  card.classList.remove('flipping');
+  void card.offsetWidth;
+  span.textContent=val;
+  card.classList.add('flipping');
+}
+
+function startCalendarFlip(){
+  let m=SM,d=SD,y=SY, tick=0, lastM=-1,lastD=-1,lastY=-1;
+
+  function advance(){
+    const prog=tick/TOTAL_DAYS; let skip=1;
+    if(prog<0.12) skip=1; else if(prog<0.75) skip=2; else skip=1;
+    for(let s=0;s<skip;s++){
+      d++; const dim=[31,28+(y%4===0?1:0),31,30,31,30,31,31,30,31,30,31];
+      if(d>dim[m]){d=1;m++;} if(m>11){m=0;y++;}
+      if(m===TM&&d===TD&&y===TY)break;
+    }
+    if((y===TY&&m===TM&&d>=TD)||y>TY){m=TM;d=TD;y=TY;}
+  }
+
+  function intv(){
+    const prog=tick/TOTAL_DAYS;
+    if(prog<0.06) return 220; if(prog<0.15) return 90;
+    if(prog<0.70) return 35;  if(prog<0.82) return 80;
+    if(prog<0.90) return 160; if(prog<0.95) return 300; return 520;
+  }
+
+  function doTick(){
+    advance();tick++;
+    if(m!==lastM){flipSet('fc-month','fv-month',MONTHS_S[m]);lastM=m;}
+    if(d!==lastD){flipSet('fc-day','fv-day',pad2(d));lastD=d;}
+    if(y!==lastY){flipSet('fc-year','fv-year',String(y));lastY=y;}
+
+    const done=(m===TM&&d===TD&&y===TY);
+    if(!done){ setTimeout(doTick,intv()); } 
+    else {
+      setTimeout(()=>{
+        document.getElementById('final-date').classList.add('show');
+        setTimeout(()=>document.getElementById('drop-message').classList.add('show'), 1200);
+      },800);
+    }
+  }
+  doTick();
+}
+</script>
+</body>
+</html>
